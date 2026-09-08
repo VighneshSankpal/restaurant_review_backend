@@ -27,3 +27,13 @@ class RestaurantUpdate(SQLModel):
     is_veg_only : bool | None = Field(default=None)
 
 
+
+class RestaurantListResponse(SQLModel):
+    success: bool = True
+    total_count :int|None 
+    restaurants : list[Restaurant]
+
+
+class RestaurantDelete(SQLModel):
+    success: bool= True
+    record :Restaurant

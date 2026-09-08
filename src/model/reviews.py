@@ -25,9 +25,3 @@ class ReviewCreate(SQLModel):
     phone_no : str| None = Field(default=None,min_length=10, max_length=10)
     description:str | None  = Field(default=None, max_length=1000)
     
-
-
-
-
-
-    
