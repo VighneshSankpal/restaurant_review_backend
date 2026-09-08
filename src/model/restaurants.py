@@ -2,6 +2,7 @@ from sqlmodel import SQLModel, Field
 from datetime import datetime
 
 
+
 class Restaurant(SQLModel, table=True):
 
     id : int|None = Field(default=None, primary_key=True)
@@ -9,7 +10,6 @@ class Restaurant(SQLModel, table=True):
     google_place_id : str| None = Field(default=None,index=True)
     created_at : datetime = Field(default_factory=datetime.now)
     is_veg_only : bool = Field(default=False)
-
 
 
 
@@ -34,6 +34,9 @@ class RestaurantListResponse(SQLModel):
     restaurants : list[Restaurant]
 
 
+
 class RestaurantDelete(SQLModel):
     success: bool= True
     record :Restaurant
+
+

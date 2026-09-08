@@ -25,3 +25,15 @@ class ReviewCreate(SQLModel):
     phone_no : str| None = Field(default=None,min_length=10, max_length=10)
     description:str | None  = Field(default=None, max_length=1000)
     
+
+
+class ReviewListResponse(SQLModel):
+    count :int | None
+    reviews : list[Review]
+
+
+class ReviewDelete(SQLModel):
+    success :bool = True
+    review :Review
+
+    
