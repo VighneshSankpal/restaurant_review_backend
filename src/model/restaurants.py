@@ -11,6 +11,8 @@ class Restaurant(SQLModel, table=True):
     created_at : datetime = Field(default_factory=datetime.now)
     is_veg_only : bool = Field(default=False)
 
+    location: str = Field(max_length=50)
+
     owner_id : int = Field(foreign_key='owner.id',unique=True)
 
     updated_at : datetime = Field(default_factory=datetime.now)
@@ -22,6 +24,7 @@ class RestaurantCreate(SQLModel):
     google_place_id : str | None = Field(default=None)
     is_veg_only : bool = Field(default=False)
     owner_id: int 
+    location: str = Field(max_length=50)
     
 
 
@@ -32,6 +35,7 @@ class RestaurantUpdate(SQLModel):
     google_place_id : str|None = Field(default=None)
     is_veg_only : bool | None = Field(default=None)
     updated_at: datetime = Field(default_factory=datetime.now)
+    location: str|None = Field(default=None, max_length=50)
 
 
 

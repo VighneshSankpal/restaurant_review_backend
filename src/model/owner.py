@@ -21,9 +21,8 @@ class OwnerCreate(SQLModel):
 
 class OwnerUpdate(SQLModel):
     """Update the owner attribute field values."""
-    id: int 
-    email: EmailStr|None
-    hashed_password : str|None
+    email: EmailStr|None = Field(default=None)
+    hashed_password : str|None =  Field(default=None)
 
 
 
