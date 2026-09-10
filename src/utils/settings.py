@@ -10,5 +10,7 @@ class Settings(BaseSettings):
 
     LOGIN_ALGORITHM: str
 
+    TOKEN_EXP_HOURS:int
+
 
 settings = Settings()

@@ -23,7 +23,7 @@ class RestaurantCreate(SQLModel):
     name: str = Field( max_length=50)
     google_place_id : str | None = Field(default=None)
     is_veg_only : bool = Field(default=False)
-    owner_id: int 
+    owner_id: int | None = Field(default=None) 
     location: str = Field(max_length=50)
     
 

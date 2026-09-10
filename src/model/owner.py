@@ -1,7 +1,6 @@
 from sqlmodel import SQLModel, Field
-from pydantic import EmailStr
+from pydantic import EmailStr, BaseModel
 from datetime import datetime
-
 
 class Owner(SQLModel, table=True):
 
@@ -42,3 +41,8 @@ class OwnerDelete(SQLModel):
     """Delete the owner data."""
     success: bool|None = Field(default=True)
     owner : Owner
+
+
+class CurrentOwner(BaseModel):
+    id:int 
+    email : EmailStr
