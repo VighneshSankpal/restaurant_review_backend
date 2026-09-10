@@ -1,6 +1,8 @@
 from sqlmodel import SQLModel, Field
 from pydantic import EmailStr
 from datetime import datetime
+
+
 class Owner(SQLModel, table=True):
 
     id :int|None = Field(default=None,primary_key=True)
@@ -15,7 +17,8 @@ class OwnerCreate(SQLModel):
     """Owner validations while creating new owner"""
 
     email : EmailStr
-    hashed_password: str 
+    hashed_password: str |None = Field(default=None)
+    password: str 
 
 
 
