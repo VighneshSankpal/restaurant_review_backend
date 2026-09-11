@@ -4,16 +4,23 @@ from sqlmodel import Session, select, func, update
 from model.model import get_session
 
 from model.restaurants import Restaurant, RestaurantCreate, RestaurantUpdate, RestaurantListResponse,RestaurantDelete
-router = APIRouter(prefix='/restaurant',tags=['restaurant'])
 
 from utils.authenticate import check_authentication 
 from model.owner import CurrentOwner
+from model.reviews import ReviewListResponse, Review, ReviewCreate
+
+
+router = APIRouter(prefix='/restaurant',tags=['restaurant'])
+
 
 @router.post('/')
 def add_restaurant(data:RestaurantCreate, session : Session = Depends(get_session), owner:CurrentOwner = Depends(check_authentication)):
 
     restaurant_data= data.model_dump()
+    records = session.exec(select(Restaurant).where(Restaurant.owner_id == owner.id)).one_or_none()
 
+    if records:
+        raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED,detail={"message":"Only single restaurant allowed per owner."})
     restaurant_data['owner_id'] = owner.id
 
 
@@ -89,4 +96,54 @@ def remove_restaurant(restaurant_id:int, session:Session= Depends(get_session), 
                                                     'message':f'Restaurant with {restaurant_id} does not exist',
                                                     'restaurant_id':restaurant_id
                                                     })
+
+
+
+
+
+
+@router.get('/{rest_id}/reviews',response_model=ReviewListResponse)
+def read_all_review(rest_id:int,
+                    session:Session= Depends(get_session),
+                    owner :CurrentOwner = Depends(check_authentication)
+                    ):
+    
+    restaurant_qurry = select(Restaurant).where(Restaurant.owner_id == owner.id, Restaurant.id== rest_id)
+    restaurant_record = session.exec(restaurant_qurry).one_or_none()
+
+    if not restaurant_record:
+        raise  HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail={"details":"you are not allowed to view this data"})
+
+    # Count total numbers of reviews 
+    count_query = select(func.count(Review.id)).where(Review.restaurant_id == rest_id)
+    count = session.exec(count_query).one()
+
+    # Get the actual reviews. 
+    query = select(Review).where(Review.restaurant_id == rest_id )
+    reviews = session.exec(query).all()
+
+    return ReviewListResponse(count=count, reviews= reviews)
+
+
+
+@router.post('/{rest_id}/reviews',response_model=Review, status_code=status.HTTP_201_CREATED)
+def create_review(rest_id:int, new_review:ReviewCreate, session:Session = Depends(get_session)):
+
+    review_data = new_review.model_dump(exclude_unset=True)
+
+    restaurant = session.exec(select(Restaurant).where(Restaurant.id == rest_id)).one_or_none()
+
+    if not restaurant:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail={'message':f"Restaurant Not Found of ID: {rest_id}", 'restaurant_id':rest_id})
+
+    review_data['restaurant_id'] = restaurant.id
+
+    review = Review(**review_data)
+    session.add(review)
+    session.commit()
+    session.refresh(review)
+    return review
+
+
+
 

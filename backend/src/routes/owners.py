@@ -23,7 +23,7 @@ def veryfiy_password(plain_password, hashed_password):
 router = APIRouter(prefix='/owner',tags=['owner'])
 
 
-@router.post('/',response_model=Owner, status_code=status.HTTP_201_CREATED)
+@router.post('/', status_code=status.HTTP_201_CREATED)
 def add_owner(data:OwnerCreate, session:Session=Depends(get_session),):
 
     
@@ -39,6 +39,16 @@ def add_owner(data:OwnerCreate, session:Session=Depends(get_session),):
         session.commit()
         session.refresh(new_owner)
 
+        exp_time = int((datetime.now()+timedelta(hours=settings.TOKEN_EXP_HOURS)).timestamp())
+        
+        token = jwt.encode(payload={'id':new_owner.id,'email':new_owner.email, 'expiration_time':exp_time},
+                            key=settings.LOGIN_SECRET_KEY, 
+                            algorithm=settings.LOGIN_ALGORITHM,
+    
+                            
+                            )
+        return {'token':token}
+
     
 
     except IntegrityError as e:
@@ -52,7 +62,6 @@ def add_owner(data:OwnerCreate, session:Session=Depends(get_session),):
 
         raise HTTPException(status_code=400,detail={'message':"Invalid Input."})
 
-    return new_owner
 
     
 
@@ -82,7 +91,7 @@ def login_user(data:OwnerCreate, session:Session = Depends(get_session),):
     exp_time = int((datetime.now()+timedelta(hours=settings.TOKEN_EXP_HOURS)).timestamp())
 
     token = jwt.encode(payload={'id':owner.id,'email':owner.email, 'expiration_time':exp_time},
-                       key=settings.LOGIN_SECREATE_KEY, 
+                       key=settings.LOGIN_SECRET_KEY, 
                        algorithm=settings.LOGIN_ALGORITHM,
 
                        

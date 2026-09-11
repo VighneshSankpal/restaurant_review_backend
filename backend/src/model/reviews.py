@@ -18,7 +18,7 @@ class Review(SQLModel, table=True):
 
     
 class ReviewCreate(SQLModel):
-    restaurant_id : int 
+    restaurant_id : int |None = Field(default=None)
     rating : int = Field(ge=1, le=5)
     reviewer_name : str = Field(max_length=35)
 

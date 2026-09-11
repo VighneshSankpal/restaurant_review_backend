@@ -20,7 +20,7 @@ def check_authentication(request: Request, session : Session= Depends(get_sessio
 
     try:
 
-        data= jwt.decode(token,key=settings.LOGIN_SECREATE_KEY, algorithms=[settings.LOGIN_ALGORITHM])
+        data= jwt.decode(token,key=settings.LOGIN_SECRET_KEY, algorithms=[settings.LOGIN_ALGORITHM])
 
         current_time = datetime.now().timestamp()
         if current_time >  data['expiration_time']:
