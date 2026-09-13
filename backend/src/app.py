@@ -1,7 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends,status
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from model.model import create_db_and_table
+from model.owner import CurrentOwner
+
+from utils.authenticate import check_authentication
 
 from utils.settings import settings
 from routes.restaurants import router as restaurant_router
@@ -34,7 +37,9 @@ def root():
         'message':"Welcome to Restaurant Review Analysis application."
     }
 
-
+@app.get('/health',tags=['health'],status_code=status.HTTP_200_OK)
+def health(owner : CurrentOwner =  Depends(check_authentication) ):
+    return {"key":True}
 
 if __name__ == '__main__':
     uvicorn.run('app:app',port = 8080,reload=True)

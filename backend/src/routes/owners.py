@@ -63,10 +63,10 @@ def add_owner(data:OwnerCreate, session:Session=Depends(get_session),):
         raise HTTPException(status_code=400,detail={'message':"Invalid Input."})
 
 
-    
+from fastapi import Response
 
 @router.post('/login',status_code=status.HTTP_200_OK)
-def login_user(data:OwnerCreate, session:Session = Depends(get_session),):
+def login_user(data:OwnerCreate, response:Response, session:Session = Depends(get_session),):
     query = select(Owner).where(Owner.email == data.email)
 
     owner =  session.exec(query).one_or_none()
@@ -96,6 +96,16 @@ def login_user(data:OwnerCreate, session:Session = Depends(get_session),):
 
                        
                        )
+
+    #  # Set the cookie
+    # response.set_cookie(
+    #     key="session_token",
+    #     value=token,
+    #     httponly=True,       # Security: Protects against XSS
+    #     samesite="lax",      # Security: Protects against CSRF
+    #     secure=False,        # Set to True in production (requires HTTPS)
+    #     path="/",            # Makes the cookie available for ALL backend routes
+    # )
 
     return {"token":token}
 
